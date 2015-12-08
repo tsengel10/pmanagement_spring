@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+	<mvc:annotation-driven conversion-service="conversion-service" />
+	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver" />
+	
+	<bean id="conversion-service" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="com.example.mvc.converters.JulianDateConverter" />
+				<bean class="com.example.mvc.converters.ResourceConverter" />
+			</list>
+		</property>
+	</bean> 
+	
+	<!-- Request scoped bean -->
+	<bean class="com.example.mvc.HitCounter" scope="session">
+		<!-- Allows us to inject bean inside another we will inject hitcounter(request 
+			scoped bean) bean into GlobalInterceptor(singleton bean) bean -->
+		<aop:scoped-proxy />
+	</bean>
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- This interceptor will only run in /project -->
+			<mvc:mapping path="/project/**" />
+			<bean class="com.example.mvc.interceptors.GlobalInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<context:component-scan base-package="com.example.mvc.controllers" />
+	<context:component-scan base-package="com.example.mvc.exception_handlers" />
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<mvc:resources location="/resources/" mapping="/resources/**" />
+
+</beans>
