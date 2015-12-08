@@ -1,2 +1,3 @@
-# pmanagement_spring
-dddd
+# Simple Java Spring project management CMS
+
+This project is for understanding Spring MVC...
